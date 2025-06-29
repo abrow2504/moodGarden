@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "../firebase";
+import { useAuth } from "../context/AuthContext";
+
 
 const moodOptions = [
   "Joyful",
@@ -12,9 +14,12 @@ const moodOptions = [
   "Lonely"
 ];
 
+
+
 export default function MoodEntry() {
   const [selectedMood, setSelectedMood] = useState("");
   const [note, setNote] = useState("");
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +29,8 @@ export default function MoodEntry() {
       await addDoc(collection(db, "moods"), {
         mood: selectedMood,
         note: note || "",
-        timestamp: Timestamp.now()
+        timestamp: Timestamp.now(),
+        userId: user?.uid || "anonymous"
       });
       setSelectedMood("");
       setNote("");
