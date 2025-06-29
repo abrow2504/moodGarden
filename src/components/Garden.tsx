@@ -1,7 +1,8 @@
 // src/components/Garden.tsx
 import { useEffect, useState } from "react";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { db } from "../firebase";
+import { useAuth } from "../context/AuthContext";
 
 interface MoodEntry {
   id: string;
@@ -11,21 +12,33 @@ interface MoodEntry {
 }
 
 export default function Garden() {
+  const { user } = useAuth();
   const [entries, setEntries] = useState<MoodEntry[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) {
+      setEntries([]);
+      setLoading(false);
+      return;
+    }
     const fetchMoods = async () => {
-      const q = query(collection(db, "moods"), orderBy("timestamp", "asc"));
+      setLoading(true);
+      const q = query(
+        collection(db, "moods"),
+        where("userId", "==", user.uid),
+        orderBy("timestamp", "asc")
+      );
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as MoodEntry[];
       setEntries(data);
+      setLoading(false);
     };
-
     fetchMoods();
-  }, []);
+  }, [user]);
 
   const moodToPlant = (mood: string) => {
     switch (mood) {
@@ -46,15 +59,32 @@ export default function Garden() {
     }
   };
 
+  if (loading) {
+    return <div className="garden"><h2>🌿 Your Mood Garden</h2><p>Loading...</p></div>;
+  }
+
+  if (!user) {
+    return <div className="garden"><h2>🌿 Your Mood Garden</h2><p>Please log in to see your moods.</p></div>;
+  }
+
   return (
     <div className="garden">
       <h2>🌿 Your Mood Garden</h2>
       <div className="grid">
-        {entries.map(entry => (
-          <div key={entry.id} className="plant-tile" title={entry.note}>
-            <span className="plant">{moodToPlant(entry.mood)}</span>
+        {entries.length === 0 ? (
+          <div style={{ width: '100%', gridColumn: '1/-1', textAlign: 'center', marginTop: '2rem' }}>
+            <p style={{ fontStyle: 'italic', color: '#caa6df', fontSize: '1.2rem' }}>
+              The garden is shrouded in mist, awaiting your first feeling.<br />
+              Plant a mood to let the blooms awaken.
+            </p>
           </div>
-        ))}
+        ) : (
+          entries.map(entry => (
+            <div key={entry.id} className="plant-tile" title={entry.note}>
+              <span className="plant">{moodToPlant(entry.mood)}</span>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

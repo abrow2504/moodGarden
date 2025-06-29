@@ -3,6 +3,8 @@ import MoodEntry from "./components/MoodEntry";
 import Garden from "./components/Garden";
 import Narration from "./components/Narration";
 
+
+
 function App() {
   return (
     <div className="app-container">
@@ -25,3 +27,4 @@ function App() {
 }
 
 export default App;
+
