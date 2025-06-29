@@ -20,9 +20,10 @@ ${formatted.join("\n")}
 Write a poetic, gothic-style message addressed directly to them. Use "you" language — speak to them as if you are delivering a prophecy or mystical reflection. Reference shadows, transformation, moonlight, or nature-- use metaphors and flowery language. Be introspective, elegant, and eerie with a haunting and personal tone. Keep it to 2 paragraphs or less.
 `;
 
-  const ORACLE_URL = import.meta.env.VITE_ORACLE_URL || "http://localhost:8787/narrate";
+const ORACLE_URL = import.meta.env.VITE_ORACLE_URL || "http://localhost:8787";
 
-  const res = await fetch(ORACLE_URL, {
+const res = await fetch(`${ORACLE_URL}/narrate`, {
+
     method: "POST",
     headers: {
       "Content-Type": "application/json"
