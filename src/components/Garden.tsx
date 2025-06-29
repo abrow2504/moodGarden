@@ -72,7 +72,12 @@ export default function Garden() {
       <h2>🌿 Your Mood Garden</h2>
       <div className="grid">
         {entries.length === 0 ? (
-          <p>No moods found for your account.</p>
+          <div style={{ width: '100%', gridColumn: '1/-1', textAlign: 'center', marginTop: '2rem' }}>
+            <p style={{ fontStyle: 'italic', color: '#caa6df', fontSize: '1.2rem' }}>
+              The garden is shrouded in mist, awaiting your first feeling.<br />
+              Plant a mood to let the blooms awaken.
+            </p>
+          </div>
         ) : (
           entries.map(entry => (
             <div key={entry.id} className="plant-tile" title={entry.note}>
