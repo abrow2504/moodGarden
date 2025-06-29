@@ -7,3 +7,5 @@ export default defineConfig({
   base: '/moodGarden/', // Set base for GitHub Pages
   plugins: [react()],
 })
+
+//comment
